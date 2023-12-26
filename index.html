@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The trusted source for IP address data, leading IP data provider - elitekamrul</title>
-    <!-- Add favicon -->
-    <link rel="icon" href="https://ipinfo.io/static/deviceicons/android-icon-48x48.png" type="image/x-icon">
-    <meta name="description" content="Get accurate and reliable IP address information with elitekamrul."/>
-    <link rel="canonical" href="https://elitekamrul.me"/>
-    <meta property="og:url" content="https://elitekamrul.me"/>
+    <title>The trusted source for IP address data, leading IP data provider - IPinfo.io</title>
+    <meta name="description" content="Get accurate and reliable IP address information with IPinfo. Trusted by over 400,000 users, developers, and businesses, we handle more than 40 billion API requests per month. Sign up for a free account today."/>
+    <link rel="canonical" href="https://ipinfo.io"/>
+    <meta property="og:url" content="https://ipinfo.io"/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="The trusted source for IP address data, leading IP data provider"/>
-    <meta property="og:description" content="Get accurate and reliable IP address information with elitekamrul."/>
-    <meta property="og:image" content="https://vpnoverview.com/wp-content/uploads/which-ip-address-to-use-the-best-vpn-server-locations-featured-800x400.png"/>
+    <meta property="og:description" content="Get accurate and reliable IP address information with IPinfo. Trusted by over 400,000 users, developers, and businesses, we handle more than 40 billion API requests per month. Sign up for a free account today."/>
+    <meta property="og:image" content="https://ipinfo.io/static/images/og_logo.png"/>
     <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:site" content="@elitekamrul"/>
-    <meta name="twitter:title" content="The trusted source for IP address data, leading IP data provider - elitekamrul"/>
-    <meta name="twitter:image" content="https://vpnoverview.com/wp-content/uploads/which-ip-address-to-use-the-best-vpn-server-locations-featured-800x400.png"/>
-    <meta name="twitter:description" content="Get accurate and reliable IP address information"/>
+    <meta name="twitter:site" content="@ipinfo"/>
+    <meta name="twitter:title" content="The trusted source for IP address data, leading IP data provider - IPinfo.io"/>
+    <meta name="twitter:image" content="https://ipinfo.io/static/images/og_logo.png"/>
+    <meta name="twitter:description" content="Get accurate and reliable IP address information with IPinfo. Trusted by over 400,000 users, developers, and businesses, we handle more than 40 billion API requests per month. Sign up for a free account today."/>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -138,50 +136,41 @@
     </a>
 
     <script>
-        // Fetch IP location information using a separate PHP file
-        fetch('get_ip_info.php')
+        // Fetch IP location information using ipinfo.io API
+        fetch('https://api64.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('ipTable').style.display = 'table';
-                document.querySelector('.loading-spinner').style.display = 'none';
+                const userIP = data.ip;
 
-                // Display original and public IP addresses
-                document.getElementById('originalIP').innerText = getOriginalIP();
-                document.getElementById('publicIP').innerText = data.ip || 'N/A';
+                fetch(`https://ipinfo.io/${userIP}?token=900c3cb30f8f40`)
+                    .then(response => response.json())
+                    .then(ipInfo => {
+                        document.getElementById('ipTable').style.display = 'table';
+                        document.querySelector('.loading-spinner').style.display = 'none';
 
-                // Display other IP location information
-                document.getElementById('city').innerText = data.city || 'N/A';
-                document.getElementById('region').innerText = data.region || 'N/A';
-                document.getElementById('country').innerText = data.country || 'N/A';
-                document.getElementById('zipCode').innerText = data.postal || 'N/A';
-                document.getElementById('location').innerText = 'Loading...';
-                document.getElementById('organization').innerText = data.org || 'N/A';
-                document.getElementById('timezone').innerText = data.timezone || 'N/A';
+                        // Display original and public IP addresses
+                        document.getElementById('originalIP').innerText = userIP;
+                        document.getElementById('publicIP').innerText = ipInfo.ip || 'N/A';
 
-                // Fetch real-time location using Geolocation API
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(position => {
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
-                        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=e2c1bcc14303437f8d35d008aab9d163`)
-                            .then(response => response.json())
-                            .then(locationData => {
-                                const locationDetails = locationData.results[0].formatted || 'N/A';
-                                document.getElementById('location').innerText = locationDetails;
-                            })
-                            .catch(error => {
-                                console.error('Error fetching real-time location:', error);
-                                document.getElementById('location').innerText = 'N/A';
-                            });
+                        // Display other IP location information
+                        document.getElementById('city').innerText = ipInfo.city || 'N/A';
+                        document.getElementById('region').innerText = ipInfo.region || 'N/A';
+                        document.getElementById('country').innerText = ipInfo.country || 'N/A';
+                        document.getElementById('zipCode').innerText = ipInfo.postal || 'N/A';
+                        document.getElementById('location').innerText = ipInfo.loc || 'N/A';
+                        document.getElementById('organization').innerText = ipInfo.org || 'N/A';
+                        document.getElementById('timezone').innerText = ipInfo.timezone || 'N/A';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching IP location:', error);
+                        document.querySelector('.loading-spinner').style.display = 'none';
+                        document.getElementById('ipTable').innerHTML = '<p>Error fetching IP information. Please try again later.</p>';
                     });
-                } else {
-                    document.getElementById('location').innerText = 'Geolocation is not supported by your browser.';
-                }
             })
             .catch(error => {
-                console.error('Error fetching IP location:', error);
+                console.error('Error fetching user IP:', error);
                 document.querySelector('.loading-spinner').style.display = 'none';
-                document.getElementById('ipTable').innerHTML = '<p>Error fetching IP information. Please try again later.</p>';
+                document.getElementById('ipTable').innerHTML = '<p>Error fetching user IP information. Please try again later.</p>';
             });
 
         // Function to copy text to clipboard
@@ -199,28 +188,10 @@
             alert("Copied to clipboard: " + textToCopy);
         }
 
-        // Function to get the original/local IP address
-        function getOriginalIP() {
-            var originalIP = "";
-            
-            // Using a third-party service to fetch the local IP
-            fetch('https://api64.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    originalIP = data.ip || 'N/A';
-                })
-                .catch(error => {
-                    console.error('Error fetching original IP:', error);
-                    originalIP = 'N/A';
-                });
-
-            return originalIP;
-        }
-
         // Function to get all data in JSON format
         function getJsonData() {
             const jsonData = {
-                originalIP: getOriginalIP(),
+                originalIP: document.getElementById('originalIP').innerText || 'N/A',
                 publicIP: document.getElementById('publicIP').innerText || 'N/A',
                 city: document.getElementById('city').innerText || 'N/A',
                 region: document.getElementById('region').innerText || 'N/A',
