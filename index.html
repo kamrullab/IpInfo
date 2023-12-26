@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The trusted source for IP address data, leading IP data provider - elitekamrul</title>
+    <!-- Add favicon -->
+    <link rel="icon" href="https://ipinfo.io/static/deviceicons/android-icon-48x48.png" type="image/x-icon">
+    <meta name="description" content="Get accurate and reliable IP address information with elitekamrul."/>
+    <link rel="canonical" href="https://elitekamrul.me"/>
+    <meta property="og:url" content="https://elitekamrul.me"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="The trusted source for IP address data, leading IP data provider"/>
+    <meta property="og:description" content="Get accurate and reliable IP address information with elitekamrul."/>
+    <meta property="og:image" content="https://vpnoverview.com/wp-content/uploads/which-ip-address-to-use-the-best-vpn-server-locations-featured-800x400.png"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@elitekamrul"/>
+    <meta name="twitter:title" content="The trusted source for IP address data, leading IP data provider - elitekamrul"/>
+    <meta name="twitter:image" content="https://vpnoverview.com/wp-content/uploads/which-ip-address-to-use-the-best-vpn-server-locations-featured-800x400.png"/>
+    <meta name="twitter:description" content="Get accurate and reliable IP address information"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px; /* Adjust the maximum width as needed for mobile view */
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            word-break: break-all;
+            max-width: 200px;
+            margin: 0 auto 10px; /* Center the elements horizontally and add some bottom margin */
+            cursor: pointer; /* Add cursor pointer for clickable elements */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive styles for larger screens (PC view) */
+        @media (min-width: 601px) {
+            th, td {
+                display: inline-block;
+                width: 48%; /* Display elements in two columns */
+                box-sizing: border-box;
+                margin-right: 2%;
+            }
+        }
+
+        /* Styling for contact link */
+        .contact-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .messenger-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url('messenger-icon.png') no-repeat;
+            background-size: cover;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <h1>Access Restriction</h1>
+    <p>Below you can find detailed information about your IP address:</p>
+
+    <div class="loading-spinner"></div>
+
+    <table id="ipTable" style="display: none;">
+        <tr>
+            <th>Original IP</th>
+            <td id="originalIP">Loading...</td>
+        </tr>
+        <tr>
+            <th>Public IP</th>
+            <td id="publicIP">Loading...</td>
+        </tr>
+        <tr>
+            <th>City</th>
+            <td id="city" onclick="copyToClipboard('city')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Region</th>
+            <td id="region" onclick="copyToClipboard('region')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Country</th>
+            <td id="country" onclick="copyToClipboard('country')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Zip Code</th>
+            <td id="zipCode" onclick="copyToClipboard('zipCode')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Location</th>
+            <td id="location" onclick="copyToClipboard('location')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Organization</th>
+            <td id="organization" onclick="copyToClipboard('organization')">Loading...</td>
+        </tr>
+        <tr>
+            <th>Timezone</th>
+            <td id="timezone" onclick="copyToClipboard('timezone')">Loading...</td>
+        </tr>
+    </table>
+
+    <button onclick="getJsonData()">Get JSON</button>
+
+    <a class="contact-link" href="https://m.me/elitekamrul" target="_blank">
+        <span class="messenger-icon"></span>Contact us on Facebook Messenger
+    </a>
+
+    <script>
+        // Fetch IP location information using a separate PHP file
+        fetch('get_ip_info.php')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ipTable').style.display = 'table';
+                document.querySelector('.loading-spinner').style.display = 'none';
+
+                // Display original and public IP addresses
+                document.getElementById('originalIP').innerText = getOriginalIP();
+                document.getElementById('publicIP').innerText = data.ip || 'N/A';
+
+                // Display other IP location information
+                document.getElementById('city').innerText = data.city || 'N/A';
+                document.getElementById('region').innerText = data.region || 'N/A';
+                document.getElementById('country').innerText = data.country || 'N/A';
+                document.getElementById('zipCode').innerText = data.postal || 'N/A';
+                document.getElementById('location').innerText = 'Loading...';
+                document.getElementById('organization').innerText = data.org || 'N/A';
+                document.getElementById('timezone').innerText = data.timezone || 'N/A';
+
+                // Fetch real-time location using Geolocation API
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=e2c1bcc14303437f8d35d008aab9d163`)
+                            .then(response => response.json())
+                            .then(locationData => {
+                                const locationDetails = locationData.results[0].formatted || 'N/A';
+                                document.getElementById('location').innerText = locationDetails;
+                            })
+                            .catch(error => {
+                                console.error('Error fetching real-time location:', error);
+                                document.getElementById('location').innerText = 'N/A';
+                            });
+                    });
+                } else {
+                    document.getElementById('location').innerText = 'Geolocation is not supported by your browser.';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching IP location:', error);
+                document.querySelector('.loading-spinner').style.display = 'none';
+                document.getElementById('ipTable').innerHTML = '<p>Error fetching IP information. Please try again later.</p>';
+            });
+
+        // Function to copy text to clipboard
+        function copyToClipboard(id) {
+            var textElement = document.getElementById(id);
+            var textToCopy = textElement.innerText;
+
+            var tempInput = document.createElement("input");
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            alert("Copied to clipboard: " + textToCopy);
+        }
+
+        // Function to get the original/local IP address
+        function getOriginalIP() {
+            var originalIP = "";
+            
+            // Using a third-party service to fetch the local IP
+            fetch('https://api64.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    originalIP = data.ip || 'N/A';
+                })
+                .catch(error => {
+                    console.error('Error fetching original IP:', error);
+                    originalIP = 'N/A';
+                });
+
+            return originalIP;
+        }
+
+        // Function to get all data in JSON format
+        function getJsonData() {
+            const jsonData = {
+                originalIP: getOriginalIP(),
+                publicIP: document.getElementById('publicIP').innerText || 'N/A',
+                city: document.getElementById('city').innerText || 'N/A',
+                region: document.getElementById('region').innerText || 'N/A',
+                country: document.getElementById('country').innerText || 'N/A',
+                zipCode: document.getElementById('zipCode').innerText || 'N/A',
+                location: document.getElementById('location').innerText || 'N/A',
+                organization: document.getElementById('organization').innerText || 'N/A',
+                timezone: document.getElementById('timezone').innerText || 'N/A',
+            };
+
+            alert("JSON Data:\n" + JSON.stringify(jsonData, null, 2));
+        }
+    </script>
+</body>
+</html>
